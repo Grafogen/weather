@@ -8,6 +8,8 @@ import Container from "@/components/Container";
 import KelvinToCels from "@/utils/KelvinToCels";
 import WeatherIcon from "@/components/WeatherIcon";
 import GetDayOrNight from "@/utils/getDayOrNight";
+import WeatherDetails from "@/components/WeatherDetails";
+import {MToKm} from "@/utils/mToKm";
 
 export default function Home() {
 
@@ -28,7 +30,7 @@ export default function Home() {
     if (error) return 'An error has occurred: ' + error.message
     console.log("data", data)
 
-    const firstData=data?.list[0]
+    const firstData = data?.list[0]
 
     return (
         <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
@@ -40,14 +42,14 @@ export default function Home() {
                             <p>{format(parseISO(firstData?.dt_txt ?? ''), 'EEEE')}</p>
                             <p className="text-lg">({format(parseISO(firstData?.dt_txt ?? ''), 'dd.MM.yyyy')})</p>
                         </h2>
-                        <Container className="gap-10 px-6 items-center" >
+                        <Container className="gap-10 px-6 items-center">
                             <div className="flex flex-col px-4">
                                 <span className="text-5xl">
                                 {KelvinToCels(firstData?.main.temp ?? 0)}°
                                     </span>
                                 <p className="text-xs space-x-1 whitespace-nowrap">
                                     <span>Feels like</span>
-                                    <span>{KelvinToCels(firstData?.main.feels_like )}°</span>
+                                    <span>{KelvinToCels(firstData?.main.feels_like)}°</span>
                                 </p>
                                 <p className="text-xs space-x-2">
                                     <span>{KelvinToCels(firstData?.main.temp_min)}°↓{" "}</span>
@@ -56,22 +58,32 @@ export default function Home() {
                             </div>
                             {/*Temprature*/}
                             <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
-                                {data?.list.map((d,i)=>{
-                                   return <div key={i} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
-                                       <p className="whitespace-nowrap">{format(parseISO(d.dt_txt), "h:mm a")}</p>
-                                      <WeatherIcon iconName={GetDayOrNight(d.weather[0].icon, d.dt_txt)}/>
-                                       <p>
-                                           {KelvinToCels(d?.main.temp ?? 0)}°
-                                       </p>
-                                   </div>
+                                {data?.list.map((d, i) => {
+                                    return <div key={i}
+                                                className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
+                                        <p className="whitespace-nowrap">{format(parseISO(d.dt_txt), "h:mm a")}</p>
+                                        <WeatherIcon iconName={GetDayOrNight(d.weather[0].icon, d.dt_txt)}/>
+                                        <p>
+                                            {KelvinToCels(d?.main.temp ?? 0)}°
+                                        </p>
+                                    </div>
                                 })}
 
                             </div>
                         </Container>
                     </div>
+                    <div className="flex gap-4">
+                        <Container className="w-fit justify-center flex-col px-4 items-center">
+                            <p className="capitalize text-center">{firstData.weather[0].description}</p>
+                            <WeatherIcon iconName={GetDayOrNight(firstData?.weather[0].icon ?? '', firstData?.dt_txt ?? '')}/>
+                        </Container>
+                        <Container className="bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto ">
+                            <WeatherDetails visability={MToKm(firstData?.visibility ?? 10000)} humidity={`${firstData?.main.humidity}%`} windSpeed={`${firstData?.}`} airPressure={`${firstData?.main.pressure} hPa`} sunrise={} sunset={}/>
+                        </Container>
+                    </div>
                 </section>
-                <section>
-<p className="text-2xl"> Forcast (7 days)</p>
+                <section className="flex w-full flex-col gap-4">
+                    <p className="text-2xl"> Forcast (7 days)</p>
                 </section>
             </main>
         </div>
