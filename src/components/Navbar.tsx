@@ -4,7 +4,11 @@ import {FaMapLocationDot} from "react-icons/fa6";
 import {MdOutlineMyLocation} from "react-icons/md";
 import SearchBox from "@/components/SearchBox";
 
-const Navbar = () => {
+type Props={
+    country:string
+}
+
+const Navbar = (props:Props) => {
     return (
         <div className="shadow-sm sticky top-0 left-0 z-50 bg-white">
             <div className="h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto">
@@ -16,7 +20,7 @@ const Navbar = () => {
                     <MdOutlineMyLocation className="text-2xl text-gray-500 hover:opacity-80 cursor-pointer" />
                     <FaMapLocationDot className="text-3xl" />
                     <p className="text-slate-900/80 text-sm">
-                        Belarus
+                        {props.country}
                     </p>
                     <div>
                         <SearchBox/>

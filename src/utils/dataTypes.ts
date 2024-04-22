@@ -7,14 +7,14 @@ interface Weather {
 
 interface Main {
     temp: number;
-    feelsLike: number;
-    tempMin: number;
-    tempMax: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
     pressure: number;
-    seaLevel: number;
-    groundLevel: number;
+    sea_level: number;
+    ground_level: number;
     humidity: number;
-    tempKf: number;
+    temp_kf: number;
 }
 
 interface Clouds {

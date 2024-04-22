@@ -4,6 +4,10 @@ import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {WeatherData} from "@/utils/dataTypes";
 import {format, parseISO} from "date-fns";
+import Container from "@/components/Container";
+import KelvinToCels from "@/utils/KelvinToCels";
+import WeatherIcon from "@/components/WeatherIcon";
+import GetDayOrNight from "@/utils/getDayOrNight";
 
 export default function Home() {
 
@@ -28,18 +32,46 @@ export default function Home() {
 
     return (
         <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
-            <Navbar/>
+            <Navbar country={data.city.country}/>
             <main className="px-3 max-w-7xl mx-auto flex flex-col gap-9 w-full pb-10 pt-4">
-                <section>
-                    <div>
+                <section className="space-y-4">
+                    <div className="space-y-2">
                         <h2 className='flex gap-1 text-2xl items-end'>
                             <p>{format(parseISO(firstData?.dt_txt ?? ''), 'EEEE')}</p>
+                            <p className="text-lg">({format(parseISO(firstData?.dt_txt ?? ''), 'dd.MM.yyyy')})</p>
                         </h2>
-                        <div></div>
+                        <Container className="gap-10 px-6 items-center" >
+                            <div className="flex flex-col px-4">
+                                <span className="text-5xl">
+                                {KelvinToCels(firstData?.main.temp ?? 0)}°
+                                    </span>
+                                <p className="text-xs space-x-1 whitespace-nowrap">
+                                    <span>Feels like</span>
+                                    <span>{KelvinToCels(firstData?.main.feels_like )}°</span>
+                                </p>
+                                <p className="text-xs space-x-2">
+                                    <span>{KelvinToCels(firstData?.main.temp_min)}°↓{" "}</span>
+                                    <span>{" "}{KelvinToCels(firstData?.main.temp_max)}°↑</span>
+                                </p>
+                            </div>
+                            {/*Temprature*/}
+                            <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
+                                {data?.list.map((d,i)=>{
+                                   return <div key={i} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
+                                       <p className="whitespace-nowrap">{format(parseISO(d.dt_txt), "h:mm a")}</p>
+                                      <WeatherIcon iconName={GetDayOrNight(d.weather[0].icon, d.dt_txt)}/>
+                                       <p>
+                                           {KelvinToCels(d?.main.temp ?? 0)}°
+                                       </p>
+                                   </div>
+                                })}
+
+                            </div>
+                        </Container>
                     </div>
                 </section>
                 <section>
-
+<p className="text-2xl"> Forcast (7 days)</p>
                 </section>
             </main>
         </div>
