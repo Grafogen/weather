@@ -7,7 +7,7 @@ import { BsSunrise } from "react-icons/bs";
 import { BsSunset } from "react-icons/bs";
 import {SingleWeather} from "@/components/SingleWeather";
 
-type WeatherProps={
+export type WeatherProps={
     visability:string
     humidity:string
     windSpeed:string
@@ -19,7 +19,7 @@ type WeatherProps={
  export function WeatherDetails (props:WeatherProps)  {
     const {visability, sunrise, sunset, humidity, windSpeed, airPressure}=props
     return (
-        <div>
+        <>
             <SingleWeather
             info={'Visability'}
             icon={<FaEye />}
@@ -50,7 +50,7 @@ type WeatherProps={
                 icon={<BsSunset />}
                 value={sunset}
             />
-        </div>
+        </>
     );
 };
 

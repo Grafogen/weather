@@ -3,15 +3,19 @@ import Navbar from "@/components/Navbar";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {WeatherData} from "@/utils/dataTypes";
-import {format, parseISO} from "date-fns";
+import {format, fromUnixTime, parseISO} from "date-fns";
 import Container from "@/components/Container";
 import KelvinToCels from "@/utils/KelvinToCels";
 import WeatherIcon from "@/components/WeatherIcon";
 import GetDayOrNight from "@/utils/getDayOrNight";
-import WeatherDetails from "@/components/WeatherDetails";
+import {WeatherDetails} from "@/components/WeatherDetails";
 import {MToKm} from "@/utils/mToKm";
+import SpeedKonv from "@/utils/SpeedKonv";
+import entry from "next/dist/server/typescript/rules/entry";
+import Forecast from "@/components/Forecast";
 
 export default function Home() {
+
 
     const {isPending, error, data} = useQuery<WeatherData>({
         queryKey: ['repoData'],
@@ -31,6 +35,21 @@ export default function Home() {
     console.log("data", data)
 
     const firstData = data?.list[0]
+
+    const uniqDates=[
+        ...new Set(
+            data?.list.map((t)=> new Date(t.dt *1000).toISOString().split('T')[0]
+            )
+        )
+    ]
+
+    const firstDataForEachDate=uniqDates.map((date)=>{
+        return data?.list.find((e)=>{
+            const entryDate=new Date(e.dt*1000).toISOString().split("T")[0]
+            const entryTime=new Date(e.dt*1000).getHours()
+            return entryDate===date && entryTime>=6
+        })
+    })
 
     return (
         <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
@@ -77,13 +96,36 @@ export default function Home() {
                             <p className="capitalize text-center">{firstData.weather[0].description}</p>
                             <WeatherIcon iconName={GetDayOrNight(firstData?.weather[0].icon ?? '', firstData?.dt_txt ?? '')}/>
                         </Container>
-                        <Container className="bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto ">
-                            <WeatherDetails visability={MToKm(firstData?.visibility ?? 10000)} humidity={`${firstData?.main.humidity}%`} windSpeed={`${firstData?.}`} airPressure={`${firstData?.main.pressure} hPa`} sunrise={} sunset={}/>
+                        <Container className="bg-yellow-300/80 px-6 gap-4 justify-between  overflow-x-auto ">
+                            <WeatherDetails
+                                visability={MToKm(firstData?.visibility ?? 10000)}
+                                humidity={`${firstData?.main.humidity}%`}
+                                windSpeed={SpeedKonv(firstData?.wind.speed)}
+                                airPressure={`${firstData?.main.pressure} hPa`}
+                                sunrise={format(fromUnixTime(data?.city.sunrise ?? 23), "H:mm")}
+                                sunset={format(fromUnixTime(data?.city.sunset ?? 31), "H:mm")} />
                         </Container>
                     </div>
                 </section>
                 <section className="flex w-full flex-col gap-4">
                     <p className="text-2xl"> Forcast (7 days)</p>
+                    {firstDataForEachDate.map((d,i)=>{
+                    return <Forecast key={i}
+                              weatherIcon={d?.weather[0].icon ?? "01d"}
+                              date={format(parseISO(d?.dt_txt ?? ''), "dd.MM")}
+                              day={format(parseISO(d?.dt_txt ?? ''), "EEEE")}
+                              temp={d?.main.temp ?? 0}
+                              feels_like={d?.main.feels_like ?? 0}
+                              temp_min={d?.main.temp_min ?? 0}
+                              tem_max={d?.main.temp_max ?? 0}
+                              description={d?.weather[0].description ?? ''}
+                              visability={`${MToKm(d?.visibility ?? 10000)}`}
+                              humidity={`${d?.main.humidity}%`}
+                              windSpeed={SpeedKonv(d?.wind.speed ?? 0)}
+                              airPressure={`${d?.main.pressure} hPa`}
+                              sunrise={format(fromUnixTime(data?.city.sunrise ?? 23), "H:mm")}
+                              sunset={format(fromUnixTime(data?.city.sunset ?? 31), "H:mm")} />
+                    })}
                 </section>
             </main>
         </div>
