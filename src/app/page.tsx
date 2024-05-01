@@ -24,7 +24,7 @@ export default function Home() {
     const {isPending, error, data, refetch} = useQuery<WeatherData>({
         queryKey: ['repoData'],
         queryFn: async () => {
-            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${NEXT_PUBLIC_WEATHER_KEY}&cnt=56`,)
+            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=e9868c1cde992a63a19c5667c4ef6d4b&cnt=56`,)
             return data
         }
     })
