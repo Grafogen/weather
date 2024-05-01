@@ -13,6 +13,7 @@ import {MToKm} from "@/utils/mToKm";
 import SpeedKonv from "@/utils/SpeedKonv";
 import entry from "next/dist/server/typescript/rules/entry";
 import Forecast from "@/components/Forecast";
+import {headers} from "next/headers";
 
 export default function Home() {
 
@@ -20,7 +21,7 @@ export default function Home() {
     const {isPending, error, data} = useQuery<WeatherData>({
         queryKey: ['repoData'],
         queryFn: async () => {
-            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=pune&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`)
+            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=pune&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`, )
             return data
         }
     })
