@@ -5,12 +5,16 @@ import {FaMapLocationDot} from "react-icons/fa6";
 import {MdOutlineMyLocation} from "react-icons/md";
 import SearchBox from "@/components/SearchBox";
 import axios from "axios";
+import {useAtom} from "jotai";
+import {loadingCityComp, placeAtom} from "@/app/atom";
 
 type Props = {
-    country: string
+    city: string
 }
 
 const Navbar = (props: Props) => {
+    const [place, setPlace]=useAtom(placeAtom)
+    const [_, setLoadingCity]=useAtom(loadingCityComp)
 
     const [city, setCity] = useState('')
     const [error, setError] = useState('')
@@ -44,12 +48,37 @@ const Navbar = (props: Props) => {
     }
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        setLoadingCity(true)
         e.preventDefault();
         if(suggestions.length===0){
             setError('Location not found')
+            setLoadingCity(false)
         }else{
             setError('')
-            setShowSuggestions(false)
+            setTimeout(()=>{
+                setPlace(city)
+                setLoadingCity(false)
+                setShowSuggestions(false)
+            },500)
+        }
+    }
+
+    function loc(){
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(async (pos)=>{
+                const {latitude, longitude} =pos.coords
+                try {
+                    setLoadingCity(true)
+                    const res=await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`)
+                    setTimeout(()=>{
+                        setPlace(res.data.name)
+                        setLoadingCity(false)
+
+                    },500)
+                } catch (e){
+                    setLoadingCity(false)
+                }
+            })
         }
     }
 
@@ -61,10 +90,10 @@ const Navbar = (props: Props) => {
                     <FaSun className='text-3xl mt-1 text-yellow-300'/>
                 </p>
                 <section className="flex gap-2 items-center">
-                    <MdOutlineMyLocation className="text-2xl text-gray-500 hover:opacity-80 cursor-pointer"/>
+                    <MdOutlineMyLocation title='Ты здесь!!' onClick={loc} className="text-2xl text-gray-500 hover:opacity-80 cursor-pointer"/>
                     <FaMapLocationDot className="text-3xl"/>
                     <p className="text-slate-900/80 text-sm">
-                        {props.country}
+                        {props.city}
                     </p>
                     <div className='relative'>
                         <SearchBox onSubmit={handleSubmit} value={city}
