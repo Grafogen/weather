@@ -14,9 +14,9 @@ type Props = {
 
 const Navbar = (props: Props) => {
 
-    const NEXT_PUBLIC_WEATHER_KEY='e9868c1cde992a63a19c5667c4ef6d4b'
-    const [place, setPlace]=useAtom(placeAtom)
-    const [_, setLoadingCity]=useAtom(loadingCityComp)
+    const NEXT_PUBLIC_WEATHER_KEY = 'e9868c1cde992a63a19c5667c4ef6d4b'
+    const [place, setPlace] = useAtom(placeAtom)
+    const [_, setLoadingCity] = useAtom(loadingCityComp)
 
     const [city, setCity] = useState('')
     const [error, setError] = useState('')
@@ -52,32 +52,32 @@ const Navbar = (props: Props) => {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         setLoadingCity(true)
         e.preventDefault();
-        if(suggestions.length===0){
+        if (suggestions.length === 0) {
             setError('Location not found')
             setLoadingCity(false)
-        }else{
+        } else {
             setError('')
-            setTimeout(()=>{
+            setTimeout(() => {
                 setPlace(city)
                 setLoadingCity(false)
                 setShowSuggestions(false)
-            },500)
+            }, 500)
         }
     }
 
-    function loc(){
-        if(navigator.geolocation){
-            navigator.geolocation.getCurrentPosition(async (pos)=>{
-                const {latitude, longitude} =pos.coords
+    function loc() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const {latitude, longitude} = pos.coords
                 try {
                     setLoadingCity(true)
-                    const res=await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=e9868c1cde992a63a19c5667c4ef6d4b`)
-                    setTimeout(()=>{
+                    const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=e9868c1cde992a63a19c5667c4ef6d4b`)
+                    setTimeout(() => {
                         setPlace(res.data.name)
                         setLoadingCity(false)
 
-                    },500)
-                } catch (e){
+                    }, 500)
+                } catch (e) {
                     setLoadingCity(false)
                 }
             })
@@ -85,27 +85,37 @@ const Navbar = (props: Props) => {
     }
 
     return (
-        <div className="shadow-sm sticky top-0 left-0 z-50 bg-white">
-            <div className="h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto ">
-                <p className="flex items-center justify-center gap-2">
-                    <h2 className="text-gray-500 text-3xl">Weather</h2>
-                    <FaSun className='text-3xl mt-1 text-yellow-300'/>
-                </p>
-                <section className="flex gap-2 items-center">
-                    <MdOutlineMyLocation title='Ты здесь!!' onClick={loc} className="text-2xl text-gray-500 hover:opacity-80 cursor-pointer"/>
-                    <FaMapLocationDot className="text-3xl"/>
-                    <p className="text-slate-900/80 text-sm">
-                        {props.city}
+        <>
+            <div className="shadow-sm sticky top-0 left-0 z-50 bg-white">
+                <div className="h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto ">
+                    <p className="flex items-center justify-center gap-2">
+                        <h2 className="text-gray-500 text-3xl">Weather</h2>
+                        <FaSun className='text-3xl mt-1 text-yellow-300'/>
                     </p>
-                    <div className='relative'>
-                        <SearchBox onSubmit={handleSubmit} value={city}
-                                   onChange={e => handleInput(e.target.value)}/>
-                        <SuggetionBox {...{showSuggestions, suggestions, handleSuggestion, error}} />
-                    </div>
-                </section>
+                    <section className="flex gap-2 items-center">
+                        <MdOutlineMyLocation title='Ты здесь!!' onClick={loc}
+                                             className="text-2xl text-gray-500 hover:opacity-80 cursor-pointer"/>
+                        <FaMapLocationDot className="text-3xl"/>
+                        <p className="text-slate-900/80 text-sm">
+                            {props.city}
+                        </p>
+                        <div className='relative hidden md:flex'>
+                            <SearchBox onSubmit={handleSubmit} value={city}
+                                       onChange={e => handleInput(e.target.value)}/>
+                            <SuggetionBox {...{showSuggestions, suggestions, handleSuggestion, error}} />
+                        </div>
+                    </section>
 
+                </div>
             </div>
-        </div>
+            <section className='flex max-w-7xl px-3 md:hidden'>
+            <div className='relative '>
+                <SearchBox onSubmit={handleSubmit} value={city}
+                           onChange={e => handleInput(e.target.value)}/>
+                <SuggetionBox {...{showSuggestions, suggestions, handleSuggestion, error}} />
+            </div>
+            </section>
+        </>
     );
 };
 export default Navbar;
