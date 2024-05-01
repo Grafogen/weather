@@ -19,12 +19,12 @@ import {useEffect} from "react";
 export default function Home() {
     const [place, setPlace] = useAtom(placeAtom)
     const [loadingCity,] = useAtom(loadingCityComp)
-
+    const NEXT_PUBLIC_WEATHER_KEY='e9868c1cde992a63a19c5667c4ef6d4b'
 
     const {isPending, error, data, refetch} = useQuery<WeatherData>({
         queryKey: ['repoData'],
         queryFn: async () => {
-            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`,)
+            const {data} = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${NEXT_PUBLIC_WEATHER_KEY}&cnt=56`,)
             return data
         }
     })

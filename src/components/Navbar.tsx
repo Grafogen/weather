@@ -13,6 +13,8 @@ type Props = {
 }
 
 const Navbar = (props: Props) => {
+
+    const NEXT_PUBLIC_WEATHER_KEY='e9868c1cde992a63a19c5667c4ef6d4b'
     const [place, setPlace]=useAtom(placeAtom)
     const [_, setLoadingCity]=useAtom(loadingCityComp)
 
@@ -27,7 +29,7 @@ const Navbar = (props: Props) => {
         setCity(value)
         if (value.length >= 3) {
             try {
-                const res = await axios.get(`https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`)
+                const res = await axios.get(`https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${NEXT_PUBLIC_WEATHER_KEY}`)
                 const suggest = res.data.list.map((i: any) => i.name);
                 setSuggestions(suggest);
                 setError('')
@@ -69,7 +71,7 @@ const Navbar = (props: Props) => {
                 const {latitude, longitude} =pos.coords
                 try {
                     setLoadingCity(true)
-                    const res=await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`)
+                    const res=await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${NEXT_PUBLIC_WEATHER_KEY}`)
                     setTimeout(()=>{
                         setPlace(res.data.name)
                         setLoadingCity(false)
